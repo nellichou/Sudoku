@@ -2,23 +2,42 @@ import javax.swing.*;
 import java.awt.*;
 import java.io.*;
 
+/**
+ * La classe Grille est utilisée pour manipuler la grille de jeu.
+ * 
+ * @version 1.1
+ * @author Benjamin Bribant, Nell Telechea
+ */
 public class Grille {
-
+	/**
+	 * Grille de jeu.
+	 */
 	private int[][] grille = new int[9][9];
 
-	public Grille() {
+    /**
+     * Constructeur de la classe Grille.
+     */
+    public Grille() {
 
 	}
 
-	public void initGrilleVide() {
+    /**
+     * Initialise une grille vide.
+     */
+    public void initGrilleVide() {
 		for ( int n=0; n<9; n++ ) {
 			for( int z=0; z<9; z++) {
-				this.grille[n][z] = 0;
+				this.grille[n][z] = 0;    //remplit la grille de 0
 			}
 		}
 	}
 
-	public void initGrilleFichier(String nomFichier) {
+    /**
+     * Initialise une grille à partir d'un fichier.
+     *
+     * @param nomFichier nom du fichier
+     */
+    public void initGrilleFichier(String nomFichier) {
 		
 		try { FileInputStream fichier = new FileInputStream(nomFichier);
 			try (DataInputStream fifi = new DataInputStream(fichier)) {
@@ -30,31 +49,32 @@ public class Grille {
 				int j=0;
 	
 				for (y = 0; y < hauteur; y++) {
-					val = fifi.readInt();
+					val = fifi.readInt(); 			//on lit chaque ligne du fichier
 					val2 = val;
 					nbchiffres = 0;
 	
-					// System.out.println(val);
 	
 					while(val2 > 0){
 						nbchiffres++;
-						val2 = val2/10;
+						val2 = val2/10;				//on compte le nombre de chiffres par ligne
 					}
 	
-					// System.out.println(nbchiffres);
-	
-					int k = 9 - nbchiffres;
+
+					/**
+					 * nombre de 0 au début d'une ligne, ce sont ceux qui ne sont pas dans le fichier
+					 */
+					int k = 9 - nbchiffres;			
 	
 					for(int l = j; l < k; l++){
-						grille[j][l] = 0;
+						grille[j][l] = 0;			//on met les 0 manquants dans les cases
 					}
 	
-					double m=(val-val%(Math.pow(10, nbchiffres-1)))/(Math.pow(10, nbchiffres-1));
+					double m=(val-val%(Math.pow(10, nbchiffres-1)))/(Math.pow(10, nbchiffres-1)); 	//on calcule le premier chiffre de la ligne après les 0
 					this.grille[j][k] = (int)m;
 					k = k+1; 
 	
 					for(i = nbchiffres; i > 1; i--){
-						double c=(val%(Math.pow(10, i-1))-val%(Math.pow(10, i-2)))/(Math.pow(10, i-2));
+						double c=(val%(Math.pow(10, i-1))-val%(Math.pow(10, i-2)))/(Math.pow(10, i-2)); //calcul des chiffres restants
 						this.grille[j][k] = (int)c;
 						k++;
 					}
@@ -74,16 +94,11 @@ public class Grille {
 		
 	}
 
-	public void afficheGrilleTxt() {
-		for ( int n=0; n<9; n++ ) {
-			for( int z=0; z<9; z++) {
-				System.out.print(this.grille[n][z] + " ");
-			}
-			System.out.println();
-		}
-	}
 
-	public void afficheGrille() {
+    /**
+     * Affichage graphique de la grille.
+     */
+    public void afficheGrille() {
 		JFrame fenetre = new JFrame("SUDOKU");
 		JPanel pan = new JPanel();
 		fenetre.setSize(800, 800);
@@ -94,7 +109,7 @@ public class Grille {
 		pan.setBackground(Color.BLACK);
 		fenetre.add(pan);
 
-		GestionSouris souris = new GestionSouris(this, fenetre);
+		GestionSouris souris = new GestionSouris(this, fenetre); //on ajoute un observateur à la souris
 
 		int i,j;
 		for(i = 0; i < 9; i++){
@@ -107,12 +122,12 @@ public class Grille {
 				
 				
 				if(this.grille[i][j]==0){
-					JTextArea txt = new JTextArea(1, 1);
+					JTextArea txt = new JTextArea(1, 1);		//si la case est égale à 0, on ajoute un JTextArea vide
 					panneau.add(txt);
 				}else {
 					int val = this.grille[i][j];
 					String valeur = Integer.toString(val);
-					panneau.add(new JTextArea(valeur,1, 1));
+					panneau.add(new JTextArea(valeur,1, 1));	//sinon on ajoute la valeur dans le JTextArea
 				}
 			}
 		}
@@ -120,24 +135,32 @@ public class Grille {
 		fenetre.setVisible(true);
 	}
 
-	public void majGrille(int val, int i, int j, boolean etat) {
+    /**
+     * Mise à jour de la grille.
+     *
+     * @param val  la valeur à entrer
+     * @param i    coordonnée ligne de la valeur
+     * @param j    coordonnée colonne de la valeur
+     * @param etat représente le choix du joueur : ajouter la valeur ou la supprimer 
+     */
+    public void majGrille(int val, int i, int j, boolean etat) {
 		int x,y;
 		boolean test = true;
 		
 		if(etat){
 			for(x=0; x<9;x++){    
-				if(this.grille[x][j]==val  ){         //vérif colonne
-																			//renvoie grille inchangée
+				if(this.grille[x][j]==val  ){         //vérification colonne
+																			//ne fait rien
 					test=false;
 					System.out.println("valeur présente dans la colonne à la ligne :" + x);
 				}
 			}
 
 			for(y=0; y<9;y++){    
-				if(this.grille[i][y]==val  ){          //vérif ligne
+				if(this.grille[i][y]==val  ){          //vérification ligne
 				
 					test=false;  
-					System.out.println("valeur présente dans la ligne à la colonne : " + y) ;    //renvoie grille inchangée
+					System.out.println("valeur présente dans la ligne à la colonne : " + y) ;    //ne fait rien
 				
 				}
 			}
@@ -149,34 +172,36 @@ public class Grille {
 			for (y = indiceColonneGauche; y < indiceColonneGauche + 3; y++) {
 				if (this.grille[x][y] == val) {
 					test=false;
-					System.out.println("valeur déjà présente dans le carré !") ;
+					System.out.println("valeur déjà présente dans le carré !") ;  //vérification carré
 				}
 			}
 		}
 
 		if(test==true){
-			this.grille[i][j] = val;
+			this.grille[i][j] = val;	//si tous les tests sont passés on ajoute la valeur
 			
 		}
 
 	}
 	else {
-		this.grille[i][j] = val;
+		this.grille[i][j] = val;		//si c'est une suppression, alors on met directement le 0 dedans sans passer par les tests
 	}
 }
 
 
+    /**
+     * Sauvegarde de la grille.
+     *
+     * @param nomFichier nom du fichier d'enregistrement
+     */
+    public void saveGrille(String nomFichier) {
 
-	public void saveGrille(String nomFichier) {
-
-		System.out.println(nomFichier);
 
 		try {
 			
 			FileOutputStream fichier = new FileOutputStream(nomFichier);
 			
-			// int[][] grille = new int[9][9];
-			// this.grille=grille;
+			
 
 			try (DataOutputStream fifi = new DataOutputStream(fichier)) {
 				String [] tab= new String[9];
@@ -184,48 +209,43 @@ public class Grille {
 				int i, detect=0;
 				int valeur=0;
 			
-				// int power=8;
+				
 				int j=0;
 				int nbLigne = 0;
 				String newval = "";
 			
 				for(i=0;i<9;i++){
 					for(j=0;j<9;j++){
-						valeur=this.grille[i][j];
+						valeur=this.grille[i][j];	//on récupère les valeurs de la grille de jeu
 
-						if(valeur != 0) { detect = 1; }
-
-						if(detect != 0) { 
-							newval = newval + String.valueOf(valeur); 
+						if(valeur != 0) { 
+							detect = 1; 
 						}
 
-						System.out.print(valeur + " ");
+						if(detect != 0) { 
+							newval = newval + String.valueOf(valeur); //on les concatène sur une ligne
+						}
+
 					}
 
-					if(detect == 1) { nbLigne++; }
+					if(detect == 1) { 
+						nbLigne++; 
+					}
 					
 					detect = 0;
 					tab[i] = newval;
 					newval= "";
-					System.out.println();
          
 				}
 			
 			
-				System.out.println();
-				System.out.println();
-			
-				for (int k=0;k<9;k++) {
-					System.out.println(tab[k]);
-				}
-			
 				for(i=0;i<9;i++){
-					tabGrille[i]=Integer.parseInt(tab[i]);
+					tabGrille[i]=Integer.parseInt(tab[i]);	//on transforme le tableau de String en int
 					
 				}
 
 				for(i=0;i<9;i++){
-					fifi.writeInt(tabGrille[i]);
+					fifi.writeInt(tabGrille[i]);	//on écrit chaque ligne dans le fichier
 				}
 
 			

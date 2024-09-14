@@ -1,25 +1,16 @@
-
-
+/**
+ * La classe Main est le point de départ du programme.
+ * @version 1.1
+ * @author Benjamin Bribant, Nell Telechea
+ */
 public class Main {
+    /**
+     *
+     * @param args arguments de la ligne de commandes
+     */
     public static void main(String[] args){
-        // Grille g = new Grille();
-        // g.initGrilleVide();
-        // g.afficheGrille();
 
-        // System.out.println();
-        // System.out.println();
-
-        // g.majGrille(12, 0, 8);
-        // g.afficheGrille();
-
-        // g.initGrilleFichier("exemple.gri");
-        // System.out.println();
-        // System.out.println();
-        // g.afficheGrille();
-
-        LancePartie p = new LancePartie();
-
-        
+        LancePartie p = new LancePartie();      //on lance la partie
 
 
     }
